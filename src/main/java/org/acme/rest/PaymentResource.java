@@ -1,6 +1,5 @@
-package org.acme.controllers;
+package org.acme.rest;
 
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -9,13 +8,12 @@ import org.acme.models.Payment;
 import org.acme.services.PaymentService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Path("pagamentos")
 @Consumes(value = MediaType.APPLICATION_JSON)
 @Produces(value = MediaType.APPLICATION_JSON)
-public class PaymentController {
+public class PaymentResource {
 
     @Inject
     PaymentService paymentService;
@@ -23,7 +21,13 @@ public class PaymentController {
     @POST
     public Response create(Payment payment) {
         paymentService.create(payment);
-        return Response.status(Response.Status.CREATED).build();
+        try {
+            return Response.status(Response.Status.CREATED).build();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Dados inválidos");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro");
+        }
     }
 
     @GET
