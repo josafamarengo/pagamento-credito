@@ -1,20 +1,33 @@
 package org.acme.models;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.acme.commons.Month;
 import org.acme.commons.PersonType;
 
 import java.time.Year;
 import java.util.UUID;
 
-public class Payment {
-    private UUID id;
-    private String paymentNumber;
-    private String plasticNumber;
+@Entity
+@Table(name="PAGAMENTOS")
+public class Payment extends PanacheEntityBase {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    private Long paymentNumber;
+    @NotNull
+    private String plasticNumber;
+    @NotNull
     private PersonType personType;
-    private Document cpfOrCnpj;
+    @NotNull
+    private String cpfOrCnpj;
+    @NotNull
     private Month expirationMonth;
-    private Year expirationYear;
+    @NotNull
+    private String expirationYear;
+    @NotNull
     private String cvv;
 
     private Payment(Builder builder) {
@@ -27,26 +40,30 @@ public class Payment {
         this.cvv = builder.cvv;
     }
 
+    public Payment() {
+
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
     public static class Builder {
         private UUID id;
-        private String paymentNumber;
+        private Long paymentNumber;
         private String plasticNumber;
 
         private PersonType personType;
-        private Document cpfOrCnpj;
+        private String cpfOrCnpj;
         private Month expirationMonth;
-        private Year expirationYear;
+        private String expirationYear;
         private String cvv;
 
         public Builder() {
             this.id = UUID.randomUUID();
         }
 
-        public Builder paymentNumber(String paymentNumber) {
+        public Builder paymentNumber(Long paymentNumber) {
             this.paymentNumber = paymentNumber;
             return this;
         }
@@ -61,7 +78,7 @@ public class Payment {
             return this;
         }
 
-        public Builder cpfOrCnpj(Document cpfOrCnpj) {
+        public Builder cpfOrCnpj(String cpfOrCnpj) {
             this.cpfOrCnpj = cpfOrCnpj;
             return this;
         }
@@ -71,7 +88,7 @@ public class Payment {
             return this;
         }
 
-        public Builder expirationYear(Year expirationYear) {
+        public Builder expirationYear(String expirationYear) {
             this.expirationYear = expirationYear;
             return this;
         }
@@ -87,4 +104,35 @@ public class Payment {
 
     }
 
+    public UUID getId() {
+        return id;
+    }
+
+    public Long getPaymentNumber() {
+        return paymentNumber;
+    }
+
+    public String getPlasticNumber() {
+        return plasticNumber;
+    }
+
+    public PersonType getPersonType() {
+        return personType;
+    }
+
+    public String getCpfOrCnpj() {
+        return cpfOrCnpj;
+    }
+
+    public Month getExpirationMonth() {
+        return expirationMonth;
+    }
+
+    public String getExpirationYear() {
+        return expirationYear;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
 }
