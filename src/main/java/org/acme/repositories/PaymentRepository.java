@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import org.acme.models.Payment;
 
 import java.util.List;
-import java.util.UUID;
 
 @ApplicationScoped
 public class PaymentRepository {
@@ -26,17 +25,17 @@ public class PaymentRepository {
                 .getResultList();
     }
 
-    public Payment findById(UUID paymentId) {
+    public Payment findById(Long paymentId) {
         return entityManager.find(Payment.class, paymentId);
     }
 
     @Transactional
-    public void delete(UUID paymentId) {
+    public void delete(Long paymentId) {
         Payment payment = entityManager.find(Payment.class, paymentId);
         if (payment != null) {
             entityManager.remove(payment);
         } else {
-            throw new IllegalArgumentException("Payment not found with ID: " + paymentId);
+            throw new IllegalArgumentException("Não foi encontrado pagamento com ID: " + paymentId);
         }
     }
 }

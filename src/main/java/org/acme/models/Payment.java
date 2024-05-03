@@ -6,17 +6,20 @@ import jakarta.validation.constraints.NotNull;
 import org.acme.commons.Month;
 import org.acme.commons.PersonType;
 
-import java.time.Year;
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+//TODO: Utilização do PanacheEntityBase
 
 @Entity
 @Table(name="PAGAMENTOS")
 public class Payment extends PanacheEntityBase {
 
+    //FIXME: Mudança de UUID para Long
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-    private Long paymentNumber;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long paymentId;
     @NotNull
     private String plasticNumber;
     @NotNull
@@ -30,14 +33,20 @@ public class Payment extends PanacheEntityBase {
     @NotNull
     private String cvv;
 
+    // TODO:Data do pagamento
+    private LocalDateTime time = LocalDateTime.now();
+
+    //TODO: Valor do pagamento
+    private BigDecimal amount;
+
     private Payment(Builder builder) {
-        this.paymentNumber = builder.paymentNumber;
         this.plasticNumber = builder.plasticNumber;
         this.personType = builder.personType;
         this.cpfOrCnpj = builder.cpfOrCnpj;
         this.expirationMonth = builder.expirationMonth;
         this.expirationYear = builder.expirationYear;
         this.cvv = builder.cvv;
+        this.amount = builder.amount;
     }
 
     public Payment() {
@@ -49,24 +58,13 @@ public class Payment extends PanacheEntityBase {
     }
 
     public static class Builder {
-        private UUID id;
-        private Long paymentNumber;
         private String plasticNumber;
-
         private PersonType personType;
         private String cpfOrCnpj;
         private Month expirationMonth;
         private String expirationYear;
         private String cvv;
-
-        public Builder() {
-            this.id = UUID.randomUUID();
-        }
-
-        public Builder paymentNumber(Long paymentNumber) {
-            this.paymentNumber = paymentNumber;
-            return this;
-        }
+        private BigDecimal amount;
 
         public Builder plasticNumber(String plasticNumber) {
             this.plasticNumber =plasticNumber;
@@ -98,18 +96,19 @@ public class Payment extends PanacheEntityBase {
             return this;
         }
 
+        public Builder amount(BigDecimal amount) {
+            this.amount = amount;
+            return this;
+        }
+
         public Payment build() {
             return new Payment(this);
         }
 
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public Long getPaymentNumber() {
-        return paymentNumber;
+    public Long getPaymentId() {
+        return paymentId;
     }
 
     public String getPlasticNumber() {
@@ -134,5 +133,13 @@ public class Payment extends PanacheEntityBase {
 
     public String getCvv() {
         return cvv;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
     }
 }

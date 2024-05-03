@@ -5,7 +5,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.models.Payment;
-import org.acme.repositories.PaymentRepository;
 import org.acme.services.PaymentService;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class PaymentResource {
 
     @GET
     @Path("/{id}")
-    public Response findById(@PathParam("id") UUID id) {
+    public Response findById(@PathParam("id") Long id) {
         Payment payment = paymentService.findById(id);
 
         if (payment == null) {
@@ -51,7 +50,7 @@ public class PaymentResource {
 
     @DELETE
     @Path("{idPagamento}")
-    public Response delete(@PathParam(value="idPagamento") UUID paymentId) {
+    public Response delete(@PathParam(value="idPagamento") Long paymentId) {
         paymentService.delete(paymentId);
         return Response.ok().build();
     }
