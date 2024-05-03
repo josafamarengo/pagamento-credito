@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import org.acme.models.Payment;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -27,8 +26,8 @@ public class PaymentRepository {
                 .getResultList();
     }
 
-    public Optional<Payment> findById(UUID paymentId) {
-        return Optional.ofNullable(entityManager.find(Payment.class, paymentId));
+    public Payment findById(UUID paymentId) {
+        return entityManager.find(Payment.class, paymentId);
     }
 
     @Transactional

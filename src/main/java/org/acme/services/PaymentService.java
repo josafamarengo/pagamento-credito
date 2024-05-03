@@ -6,7 +6,6 @@ import org.acme.models.Payment;
 import org.acme.repositories.PaymentRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -21,6 +20,10 @@ public class PaymentService {
 
     public List<Payment> findAll() {
         return Payment.listAll();
+    }
+
+    public Payment findById(UUID paymentId) {
+        return paymentRepository.findById(paymentId);
     }
 
     public void delete(UUID paymentId) {

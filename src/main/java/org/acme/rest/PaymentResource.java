@@ -5,6 +5,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.models.Payment;
+import org.acme.repositories.PaymentRepository;
 import org.acme.services.PaymentService;
 
 import java.util.List;
@@ -34,6 +35,18 @@ public class PaymentResource {
     public Response read() {
         List<Payment> payments = paymentService.findAll();
         return Response.ok().entity(payments).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response findById(@PathParam("id") UUID id) {
+        Payment payment = paymentService.findById(id);
+
+        if (payment == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(payment).build();
+        }
     }
 
     @DELETE
