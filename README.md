@@ -84,6 +84,10 @@ cd pagamento-credito
 
 ```
 
+4. Acesse os endpoints pelo Swagger clicando no link abaixo:
+
+- [Clique aqui para acessar os endpoints](http://localhost:8080/q/swagger-ui)
+
 <p align="right">(<a href="#readme-top">Volte ao topo</a>)</p>
 
 
