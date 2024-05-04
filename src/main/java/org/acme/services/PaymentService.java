@@ -23,7 +23,7 @@ public class PaymentService {
     }
 
     public List<Payment> findAll() {
-        return Payment.listAll();
+        return paymentRepository.read();
     }
 
     public Payment findById(Long paymentId) {
