@@ -3,8 +3,6 @@ package org.acme.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import org.acme.commons.Month;
-import org.acme.commons.PersonType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
