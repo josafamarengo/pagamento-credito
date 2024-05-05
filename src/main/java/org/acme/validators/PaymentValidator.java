@@ -1,5 +1,6 @@
 package org.acme.validators;
 
+import org.acme.commons.Consts;
 import org.acme.models.Payment;
 
 import java.math.BigDecimal;
@@ -141,7 +142,7 @@ public class PaymentValidator {
 
     private void validateExpirationYear(Payment payment) {
         int year = payment.getExpirationYear();
-        int maxVal = LocalDate.now().getYear() + 10;
+        int maxVal = LocalDate.now().getYear() + Consts.MAX_EXPIRATION_YEAR_OFFSET;
 
         if (year > maxVal || year < 1900) {
             throw new IllegalArgumentException("Formato do ano inválido");
