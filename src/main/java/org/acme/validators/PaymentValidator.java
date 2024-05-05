@@ -3,6 +3,7 @@ package org.acme.validators;
 import org.acme.models.Payment;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.regex.Pattern;
 
@@ -118,9 +119,12 @@ public class PaymentValidator {
      * com a data atual para garantir que o cartão não tenha expirado.
      *
      * @param payment O objeto Payment contendo a data de vencimento a ser validada.
-     * @throws IllegalArgumentException Se a data de vencimento do cartão estiver expirada.
+     * @throws IllegalArgumentException Se a data de vencimento do cartão estiver expirada ou o formato dos dados estiver incorreto.
      */
     public void validateExpirationDate(Payment payment) {
+        validateExpirationMonth(payment);
+        validateExpirationYear(payment);
+
         YearMonth currentYearMonth = YearMonth.now();
 
         YearMonth expirationYearMonth = YearMonth.of(payment.getExpirationYear(), payment.getExpirationMonth());
@@ -130,13 +134,28 @@ public class PaymentValidator {
         }
     }
 
+    private void validateExpirationMonth(Payment payment) {
+        int month = payment.getExpirationMonth();
+        if ( month > 12 || month < 1) throw new IllegalArgumentException("Mês Inválido");
+    }
+
+    private void validateExpirationYear(Payment payment) {
+        int year = payment.getExpirationYear();
+        int maxVal = LocalDate.now().getYear() + 10;
+
+        if (year > maxVal || year < 1900) {
+            throw new IllegalArgumentException("Formato do ano inválido");
+        }
+    }
+
     /**
      * Valida o código de segurança (CVV) do cartão.
      *
      * Este método verifica se o CVV fornecido está no formato correto,
      * que deve ter 3 ou 4 dígitos.
      *
-     * @param payment O objeto Payment contendo o CVV a ser validado.
+     * @param payment O objeto Payment contnew Payment();
+        payment.setPlasticNumber("12345678901234AB");endo o CVV a ser validado.
      * @throws IllegalArgumentException Se o CVV não estiver no formato correto.
      */
     public void validateCvv(Payment payment) {
