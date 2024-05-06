@@ -28,6 +28,9 @@
         <li><a href="#installation">Instalação</a></li>
       </ul>
     </li>
+    <li>
+      <a href="#endpoints">Endpoints</a>
+    </li>
     <li><a href="#contact">Contato</a></li>
   </ol>
 
@@ -47,10 +50,12 @@ dados do pagamento e um mecanismo para consulta posterior desses dados armazenad
 - PostgreSQL
 - Prometheus
 - Docker
+- JUnit
 
 <p align="right">(<a href="#readme-top">Volte ao topo</a>)</p>
 
 <a name="getting-started"></a>
+
 ## Rodando localmente
 
 ### Pré-requisitos
@@ -86,9 +91,50 @@ cd pagamento-credito
 
 4. Acesse os endpoints pelo Swagger clicando no link abaixo:
 
-- [Clique aqui para acessar os endpoints](http://localhost:8080/q/swagger-ui)
+- [http://localhost:8080/q/swagger-ui](http://localhost:8080/q/swagger-ui)
 
 <p align="right">(<a href="#readme-top">Volte ao topo</a>)</p>
+
+<a name="endpoints"></a>
+
+## Endpoints
+
+#### Retorna todos os pagamentos
+
+```http
+  GET /pagamentos
+```
+
+#### Retorna um pagamento específico
+
+```http
+  GET /pagamentos/${id}
+```
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `id`      | `string` | **Obrigatório**. O ID do pagamento que você quer |
+
+#### Envia um novo pagamento
+
+```http
+  POST /pagamentos
+```
+
+```json
+{
+  "paymentId": 0,
+  "plasticNumber": "1234123412341234",
+  "personType": 1,
+  "cpfOrCnpj": "123.456.789-10",
+  "expirationMonth": 12,
+  "expirationYear": 2025,
+  "cvv": "123",
+  "amount": 200.00
+}
+```
+
+
 
 
 <a name="contact"></a>
