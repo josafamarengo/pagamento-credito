@@ -1,0 +1,12 @@
+version: "3.4"
+services:
+  pagamento-credito:
+    container_name: pagamento-credito
+    image: pagamento-credito:latest
+    env_file: .env
+    build:
+      dockerfile: ./Dockerfile
+    network_mode: host
+    ports:
+      - "8080:8080" # Server
+      - "5005:5005" # DEBUG Não uilizar nos ambientes de producao/homologacao
