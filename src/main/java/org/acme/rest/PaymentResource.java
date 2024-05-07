@@ -8,7 +8,6 @@ import org.acme.models.Payment;
 import org.acme.services.PaymentService;
 
 import java.util.List;
-import java.util.UUID;
 
 @Path("pagamentos")
 @Consumes(value = MediaType.APPLICATION_JSON)
