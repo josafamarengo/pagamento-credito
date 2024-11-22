@@ -1,12 +1,16 @@
 version: "3.4"
 services:
   pagamento-credito:
-    container_name: pagamento-credito
-    image: pagamento-credito:latest
-    env_file: .env
-    build:
-      dockerfile: ./Dockerfile
-    network_mode: host
+    build: .
     ports:
       - "8080:8080"
       - "5005:5005"
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: pagamentos
+    ports:
+      - '5432:5432'
