@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 
-# Evita pipelines duplicados da mesma branch
 concurrency:
   group: "quality-security-${{ github.ref }}"
   cancel-in-progress: true
@@ -69,20 +68,16 @@ jobs:
 
       - name: ArquUnit validation
         run: mvn -Dtest=ArquUnitTests test
-        # Supondo que você tenha um pacote src/test/java/.../ArquUnitTests.java
-        # que inclui suas regras de arquitetura (como domain não depende de infra)
 
       # -------------------------------------------------------------
-      # 5. Spotless / Checkstyle (Code formatting)
+      # Spotless / Checkstyle (Code formatting)
       # -------------------------------------------------------------
       - name: Spotless check
         run: mvn spotless:check || mvn checkstyle:check
 
       # -------------------------------------------------------------
-      # 6. OWASP Dependency Check (SCA)
+      # Upload report
       # -------------------------------------------------------------
-      - name: OWASP Dependency Check
-
       - name: Upload ArquUnit report
         uses: actions/upload-artifact@v4
         with:
@@ -180,7 +175,7 @@ jobs:
           path: semgrep.sarif
 
   # -------------------------------------------------------------
-  # 6. MERGE ENFORCEMENT (PR só pode ser mergeado se tudo ok)
+  # 6. MERGE ENFORCEMENT
   # -------------------------------------------------------------
   enforce:
     name: "Enterprise Gatekeeper"
