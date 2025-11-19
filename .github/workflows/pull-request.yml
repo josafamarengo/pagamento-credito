@@ -1,0 +1,79 @@
+name: Quality & Security Pipeline
+
+on:
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  quality-security:
+    name: Static Quality + Security Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------------------------------------------------------------
+      # 1. Checkout
+      # -------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------------------------------------------------------------
+      # 2. Setup JDK
+      # -------------------------------------------------------------
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # -------------------------------------------------------------
+      # 3. Build & Unit Tests
+      # -------------------------------------------------------------
+      - name: Build & test with Maven
+        run: mvn -B clean verify
+
+      # -------------------------------------------------------------
+      # 4. ArquUnit (Architecture validation)
+      # -------------------------------------------------------------
+      - name: ArquUnit (Architecture Rules)
+        run: mvn -Dtest=ArquUnitTests test
+        # Supondo que você tenha um pacote src/test/java/.../ArquUnitTests.java
+        # que inclui suas regras de arquitetura (como domain não depende de infra)
+
+      # -------------------------------------------------------------
+      # 5. Spotless / Checkstyle (Code formatting)
+      # -------------------------------------------------------------
+      - name: Spotless check
+        run: mvn spotless:check || mvn checkstyle:check
+
+      # -------------------------------------------------------------
+      # 6. OWASP Dependency Check (SCA)
+      # -------------------------------------------------------------
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@v3.0.3
+        with:
+          project: "java-project"
+          path: "."
+          format: "HTML"
+          out: "dependency-check-report"
+
+      - name: Upload dependency check report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: dependency-check-report
+
+      # -------------------------------------------------------------
+      # 7. Semgrep (SAST)
+      # -------------------------------------------------------------
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: "p/owasp-top-ten"
+          generateSarif: true
+
+      - name: Upload Semgrep SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep.sarif
