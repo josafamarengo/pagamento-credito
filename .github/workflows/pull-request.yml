@@ -161,7 +161,8 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           config: "p/owasp-top-ten"
-          generateSarif: true
+          output: semgrep.sarif
+          output-format: sarif
 
       - name: Upload SARIF to GitHub Security Dashboard
         uses: github/codeql-action/upload-sarif@v3
