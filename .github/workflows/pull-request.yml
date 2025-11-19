@@ -102,7 +102,7 @@ jobs:
           distribution: temurin
           cache: 'maven'
           
-      - if: ${{ hashFiles('**/*pom.xml')  contains(steps.prepare_maven.outputs.plugins, 'spotless-maven-plugin') }}
+      - if: ${{ hashFiles('**/*pom.xml') != '' && contains(steps.prepare_maven.outputs.plugins, 'spotless-maven-plugin') }}
         run: mvn spotless:check
 
       - if: ${{ hashFiles('**/checkstyle.xml') != '' }}
