@@ -67,6 +67,7 @@ jobs:
           cache: maven
 
       - name: ArquUnit validation
+        if: ${{ hashFiles('**/*ArchitectureTest.java') != '' }}
         run: mvn -Dtest=ArquUnitTests test
 
       # -------------------------------------------------------------
@@ -100,10 +101,12 @@ jobs:
           java-version: 21
           distribution: temurin
           cache: 'maven'
+          
+      - if: ${{ hashFiles('**/*pom.xml')  contains(steps.prepare_maven.outputs.plugins, 'spotless-maven-plugin') }}
+        run: mvn spotless:check
 
-      - run: mvn spotless:check
-
-      - run: mvn checkstyle:check
+      - if: ${{ hashFiles('**/checkstyle.xml') != '' }}
+        run: mvn checkstyle:check
 
   # -------------------------------------------------------------
   # 4. SEGURANÇA A. SCA (OWASP Dependency Check)
