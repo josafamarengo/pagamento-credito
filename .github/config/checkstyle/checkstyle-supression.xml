@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+          "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+          "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+
+    <!-- ========================================= -->
+    <!-- IGNORAR CÓDIGO GERADO AUTOMATICAMENTE     -->
+    <!-- ========================================= -->
+
+    <!-- Quarkus: fontes geradas no build -->
+    <suppress files=".*generated-sources/.*" />
+    <suppress files=".*generated-test-sources/.*" />
+
+    <!-- Diretório target -->
+    <suppress files=".*target/.*" />
+
+    <!-- Quarkus: build time instrumentation -->
+    <suppress files=".*build/classes/java/.*" />
+
+    <!-- Panache - classes geradas -->
+    <suppress files=".*PanacheEntity_.java" />
+    <suppress files=".*PanacheRepository_.java" />
+
+
+    <!-- ========================================= -->
+    <!-- IGNORAR TESTES (moderado)                 -->
+    <!-- ========================================= -->
+
+    <!-- Caso deseje deixar testes SEM estilo checkstyle -->
+    <suppress files=".*Test\.java" />
+    <suppress files=".*IT\.java" />
+    <suppress files=".*test/.*" />
+
+
+    <!-- ========================================= -->
+    <!-- IGNORAR REGRAS ESPECÍFICAS POR REGRA       -->
+    <!-- ========================================= -->
+
+    <!-- Exemplo: ignorar length de linha em arquivos específicos -->
+    <!--
+    <suppress checks="LineLength" files=".*SomeLegacyClass.java" />
+    -->
+
+    <!-- Exemplo: ignorar MagicNumber em um pacote específico -->
+    <!--
+    <suppress checks="MagicNumber" files=".*legacy/.*" />
+    -->
+
+</suppressions>
