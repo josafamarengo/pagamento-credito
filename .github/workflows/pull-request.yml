@@ -107,6 +107,34 @@ jobs:
             -o checkstyle-result.xml \
             src/main/java src/test/java || true
 
+      - name: Convert Checkstyle XML to Markdown
+        run: |
+          echo "## Checkstyle Report" > checkstyle.md
+          echo "" >> checkstyle.md
+          echo "| File | Line | Message |" >> checkstyle.md
+          echo "|------|------|---------|" >> checkstyle.md
+
+          xmllint --xpath "//file/error" checkstyle-result.xml 2>/dev/null | \
+          sed 's/></>\n</g' | \
+          while read -r line; do
+            FILE=$(echo "$line" | grep -o 'name="[^"]*"' | head -1 | cut -d'"' -f2)
+            LINE=$(echo "$line" | grep -o 'line="[^"]*"' | head -1 | cut -d'"' -f2)
+            MSG=$(echo "$line" | grep -o 'message="[^"]*"' | head -1 | cut -d'"' -f2)
+            echo "| $FILE | $LINE | $MSG |" >> checkstyle.md
+          done
+
+          if ! grep -q "|" checkstyle.md ; then
+            echo "Nenhum problema encontrado 🎉" >> checkstyle.md
+          fi
+
+      - name: Add report to GitHub Job Summary
+        run: cat checkstyle.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Post Checkstyle report to PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: checkstyle.md
+
   # -------------------------------------------------------------
   # 4. SEGURANÇA DEPENDÊNCIAS
   # -------------------------------------------------------------
