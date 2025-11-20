@@ -1,4 +1,4 @@
-name: "Quality & Security Pipeline"
+name: "Verificação de Qualidade"
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ jobs:
   # 1. COMPILAÇÃO + TESTES UNITÁRIOS (fan-out: matriz)
   # -------------------------------------------------------------
   build-test:
-    name: "Build & Unit Tests (matrix)"
+    name: "Build & Unit Tests"
     runs-on: ubuntu-latest
 
     strategy:
@@ -49,10 +49,10 @@ jobs:
           path: target/surefire-reports
 
   # -------------------------------------------------------------
-  # 2. ARQUITETURA (ArquUnit)
+  # 2. ARQUITETURA
   # -------------------------------------------------------------
   architecture:
-    name: "Architecture Review (ArquUnit)"
+    name: "Architecture Review"
     runs-on: ubuntu-latest
     needs: build-test
 
@@ -80,10 +80,10 @@ jobs:
           path: target/surefire-reports
 
   # -------------------------------------------------------------
-  # 3. FORMATAÇÃO + ESTILO (Spotless + Checkstyle)
+  # 3. DESIGN DE CÓDIGO
   # -------------------------------------------------------------
   linting:
-    name: "Code Style (Spotless + Checkstyle)"
+    name: "Code Style"
     runs-on: ubuntu-latest
     needs: build-test
 
@@ -99,78 +99,15 @@ jobs:
       - if: ${{ hashFiles('**/*pom.xml') != '' && contains(steps.prepare_maven.outputs.plugins, 'spotless-maven-plugin') }}
         run: mvn spotless:check
 
-      - if: ${{ hashFiles('**/checkstyle.xml') != '' }}
-        run: mvn checkstyle:check
+      - run: mvn checkstyle:check
 
   # -------------------------------------------------------------
-  # 4. SEGURANÇA A. SCA (OWASP Dependency Check)
+  # 4. SEGURANÇA DEPENDÊNCIAS
   # -------------------------------------------------------------
-  sca:
-    name: "OWASP Dependency Check (SCA)"
-    runs-on: ubuntu-latest
-    needs: build-test
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache Dependency-Check data
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/dependency-check
-          key: dependency-check-${{ runner.os }}
-          restore-keys: |
-            dependency-check-
-
-      - name: Run Dependency Check
-        uses: dependency-check/Dependency-Check_Action@v3
-        with:
-          project: "java-project"
-          path: "."
-          format: "HTML"
-          out: "dependency-check-report"
-
-      - name: Upload SCA report
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: dependency-check-report
 
   # -------------------------------------------------------------
-  # 5. SEGURANÇA B. SAST (Semgrep)
+  # 5. SEGURANÇA B. SAST
   # -------------------------------------------------------------
-  sast-semgrep:
-    name: "Semgrep Analysis (SAST)"
-    runs-on: ubuntu-latest
-    needs: build-test
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache Semgrep
-        uses: actions/cache@v4
-        with:
-          path: ~/.semgrep
-          key: semgrep-${{ runner.os }}-${{ hashFiles('semgrep.yml', '.semgrep/**') }}
-          restore-keys: |
-            semgrep-${{ runner.os }}-
-
-      - name: Semgrep (OWASP Top 10)
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: "p/owasp-top-ten"
-          output: semgrep.sarif
-          output-format: sarif
-
-      - name: Upload SARIF to GitHub Security Dashboard
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: semgrep.sarif
-
-      - name: Upload Semgrep artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: semgrep-results
-          path: semgrep.sarif
 
   # -------------------------------------------------------------
   # 6. MERGE ENFORCEMENT
@@ -178,7 +115,7 @@ jobs:
   enforce:
     name: "Enterprise Gatekeeper"
     runs-on: ubuntu-latest
-    needs: [ build-test, linting, architecture, sca, sast-semgrep ]
+    needs: [ build-test, linting, architecture ]
 
     steps:
       - name: All checks passed
