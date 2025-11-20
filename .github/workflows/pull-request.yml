@@ -115,24 +115,28 @@ jobs:
             -o checkstyle-result.xml \
             src/main/java src/test/java || true
 
-      - name: Convert Checkstyle XML to Markdown
+      - name: Install xmlstarlet
+        run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
+      - name: Generate Checkstyle report
         run: |
-          echo "## Checkstyle Report" > checkstyle.md
+          echo "# Checkstyle Report" > checkstyle.md
           echo "" >> checkstyle.md
-          echo "| File | Line | Message |" >> checkstyle.md
-          echo "|------|------|---------|" >> checkstyle.md
-
-          xmllint --xpath "//*[name()='file']/*[name()='error']" checkstyle-result.xml 2>/dev/null | \
-          sed 's/></>\n</g' | \
-          while read -r line; do
-            FILE=$(echo "$line" | grep -o 'name="[^"]*"' | head -1 | cut -d'"' -f2)
-            LINE=$(echo "$line" | grep -o 'line="[^"]*"' | head -1 | cut -d'"' -f2)
-            MSG=$(echo "$line" | grep -o 'message="[^"]*"' | head -1 | cut -d'"' -f2)
-            echo "| $FILE | $LINE | $MSG |" >> checkstyle.md
-          done
-
-          if ! grep -q "|" checkstyle.md ; then
-            echo "Nenhum problema encontrado 🎉" >> checkstyle.md
+          echo "## Summary" >> checkstyle.md
+          TOTAL=$(xmlstarlet sel -t -v "count(/checkstyle/file/error)" checkstyle-result.xml)
+          echo "- Total Issues: **$TOTAL**" >> checkstyle.md
+          echo "" >> checkstyle.md
+          if [ "$TOTAL" -gt 0 ]; then
+            echo "## Issues Detail" >> checkstyle.md
+            echo "" >> checkstyle.md
+            xmlstarlet sel -t -m "/checkstyle/file" -v "@name" -o ":" -n checkstyle-result.xml | while read FILE; do
+              FILENAME=$(echo $FILE | cut -d: -f1)
+              echo "### File: $FILENAME" >> checkstyle.md
+              xmlstarlet sel -t -m "/checkstyle/file[@name='$FILENAME']/error" -v "concat('Line ', @line, ': ', @message, ' (', @source, ')')" -n checkstyle-result.xml >> checkstyle.md
+              echo "" >> checkstyle.md
+            done
+          else
+            echo "No issues found. Great job!" >> checkstyle.md
           fi
 
       - name: Add report to GitHub Job Summary
