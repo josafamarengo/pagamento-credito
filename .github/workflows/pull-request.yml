@@ -120,31 +120,40 @@ jobs:
 
       - name: Generate Checkstyle report
         run: |
-          echo "# Checkstyle Report" > checkstyle.md
+          set -e
+          echo "## Checkstyle Report" > checkstyle.md
           echo "" >> checkstyle.md
-          echo "## Summary" >> checkstyle.md
-          TOTAL=$(xmlstarlet sel -t -v "count(/checkstyle/file/error)" checkstyle-result.xml)
-          echo "- Total Issues: **$TOTAL**" >> checkstyle.md
-          echo "" >> checkstyle.md
-          if [ "$TOTAL" -gt 0 ]; then
-            echo "## Issues Detail" >> checkstyle.md
-            echo "" >> checkstyle.md
-            xmlstarlet sel -t -m "/checkstyle/file" -v "@name" -o ":" -n checkstyle-result.xml | while read FILE; do
-              FILENAME=$(echo $FILE | cut -d: -f1)
-              echo "### File: $FILENAME" >> checkstyle.md
-              xmlstarlet sel -t -m "/checkstyle/file[@name='$FILENAME']/error" -v "concat('Line ', @line, ': ', @message, ' (', @source, ')')" -n checkstyle-result.xml >> checkstyle.md
-              echo "" >> checkstyle.md
-            done
-          else
-            echo "No issues found. Great job!" >> checkstyle.md
+          echo "| File | Line | Message |" >> checkstyle.md
+          echo "|------|------|---------|" >> checkstyle.md
+
+          if [ ! -s checkstyle-result.xml ]; then
+            echo "Nenhum relatório checkstyle-result.xml encontrado ou está vazio." >> checkstyle.md
+            exit 0
           fi
 
+          if command -v xmlstarlet >/dev/null 2>&1; then
+            xmlstarlet sel -t -m "//file/error" -v "concat(../../@name, '|', @line, '|', @message)" -n checkstyle-result.xml | while IFS='|' read -r file line message; do
+              echo "| $file | $line | $message |" >> checkstyle.md
+            done
+          else
+            # Fallback usando grep e sed
+            grep "<error " checkstyle-result.xml | sed -E 's/.*<file name="([^"]+)">.*line="([^"]+)" message="([^"]+)".*/|\1|\2|\3|/' | while IFS='|' read -r file line message; do
+              echo "| $file | $line | $message |" >> checkstyle.md
+            done
+          fi
+
+          # Verifica se o relatório está vazio (apenas cabeçalho)
+          if [ $(wc -l < checkstyle.md) -le 3 ]; then
+            echo "Nenhum problema de estilo de código encontrado." >> checkstyle.md
+          fi
+          
       - name: Add report to GitHub Job Summary
         run: cat checkstyle.md >> $GITHUB_STEP_SUMMARY
 
       - name: Post Checkstyle report to PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
+          recreate: true
           path: checkstyle.md
 
   # -------------------------------------------------------------
