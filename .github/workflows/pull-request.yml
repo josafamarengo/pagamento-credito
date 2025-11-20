@@ -99,7 +99,7 @@ jobs:
       - if: ${{ hashFiles('**/*pom.xml') != '' && contains(steps.prepare_maven.outputs.plugins, 'spotless-maven-plugin') }}
         run: mvn spotless:check
 
-      - run: mvn checkstyle:check
+      - run: mvn checkstyle:check -Dcheckstyle.config.location=.github/config/checkstyle/checkstyle.xml
 
   # -------------------------------------------------------------
   # 4. SEGURANÇA DEPENDÊNCIAS
