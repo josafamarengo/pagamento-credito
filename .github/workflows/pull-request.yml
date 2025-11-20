@@ -4,6 +4,14 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read
+  checks: write
+  statuses: write
+  security-events: write
+
 concurrency:
   group: "quality-security-${{ github.ref }}"
   cancel-in-progress: true
