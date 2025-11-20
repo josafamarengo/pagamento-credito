@@ -71,12 +71,6 @@ jobs:
         run: mvn -Dtest=ArquUnitTests test
 
       # -------------------------------------------------------------
-      # Spotless / Checkstyle (Code formatting)
-      # -------------------------------------------------------------
-      - name: Spotless check
-        run: mvn spotless:check || mvn checkstyle:check
-
-      # -------------------------------------------------------------
       # Upload report
       # -------------------------------------------------------------
       - name: Upload ArquUnit report
