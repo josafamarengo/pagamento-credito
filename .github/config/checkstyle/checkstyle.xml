@@ -5,7 +5,7 @@
 
     <!-- Evita warnings de classes geradas pelo Quarkus -->
     <module name="SuppressionFilter">
-        <property name="file" value="checkstyle-suppressions.xml" />
+        <property name="file" value=".github/config/checkstyle/checkstyle-suppressions.xml" />
     </module>
 
     <!-- ======================== -->
