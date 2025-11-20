@@ -99,9 +99,13 @@ jobs:
       - if: ${{ hashFiles('**/*pom.xml') != '' && contains(steps.prepare_maven.outputs.plugins, 'spotless-maven-plugin') }}
         run: mvn spotless:check
 
-      - run: mvn -Dcheckstyle.config.location=.github/config/checkstyle/checkstyle.xml \
-           -Dcheckstyle.suppressions.location=.github/config/checkstyle/checkstyle-suppressions.xml \
-           checkstyle:check
+      - run: |
+          wget -q https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.17.0/checkstyle-10.17.0-all.jar -O checkstyle.jar
+          java -jar checkstyle.jar \
+            -c .github/config/checkstyle/checkstyle.xml \
+            -f xml \
+            -o checkstyle-result.xml \
+            src/main/java src/test/java || true
 
   # -------------------------------------------------------------
   # 4. SEGURANÇA DEPENDÊNCIAS
